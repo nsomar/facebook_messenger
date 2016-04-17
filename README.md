@@ -9,19 +9,11 @@ ExFacebookMessenger is a library that easy the creation of facebook messenger bo
 
 ## Installation
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed as:
-
-  1. Add facebook_messenger to your list of dependencies in `mix.exs`:
-
-        def deps do
-          [{:facebook_messenger, "~> 0.0.1"}]
-        end
-
-  2. Ensure facebook_messenger is started before your application:
-
-        def application do
-          [applications: [:facebook_messenger]]
-        end
+```
+def deps do
+  [{:facebook_messenger, "~> 0.1.0"}]
+end
+```
 
 ## Requirements
 - a Phoenix App with phoenix `1.1` and up
