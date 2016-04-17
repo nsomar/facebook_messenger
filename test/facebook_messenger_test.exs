@@ -18,7 +18,7 @@ defmodule FacebookMessenger.Message.Test do
     assert message.text == "hello"
   end
 
-    test "it gets initialized from a json" do
+  test "it gets initialized from a json" do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
     {:ok, json} = file |> Poison.decode
 
@@ -33,5 +33,19 @@ defmodule FacebookMessenger.Message.Test do
 
     message = messaging |> hd |> Map.get(:message)
     assert message.text == "hello"
+  end
+
+  test "it gets the message text from the response" do
+    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
+    res = FacebookMessenger.Response.parse(file)
+    res = FacebookMessenger.Response.message_texts(res)
+    assert res == ["hello"]
+  end
+
+  test "it gets the message sender id" do
+    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
+    res = FacebookMessenger.Response.parse(file)
+    res = FacebookMessenger.Response.message_senders(res)
+    assert res == ["USER_ID"]
   end
 end
