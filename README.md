@@ -60,3 +60,13 @@ config :facebook_messenger,
 To get the `facebook_page_token` and `challange_verification_token` follow the instructions [here ](https://developers.facebook.com/docs/messenger-platform/quickstart)
 
 For the webhook endpoint use `http://your-app-url/webhook`
+
+## Sample
+A sample facebook chat echo bot can be found [here](https://github.com/oarrabi/elixir-echo-bot).
+
+## Future Improvements
+
+- [ ] Better tests
+- [ ] Handle other types of facebook messages
+- [ ] Support sending facebook structure messages
+- [ ] Handle facebook postback messages
