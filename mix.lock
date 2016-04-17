@@ -1,0 +1,5 @@
+%{"httpotion": {:hex, :httpotion, "2.2.2"},
+  "ibrowse": {:hex, :ibrowse, "4.2.2"},
+  "phoenix": {:hex, :phoenix, "1.1.4"},
+  "plug": {:hex, :plug, "1.1.3"},
+  "poison": {:hex, :poison, "2.1.0"}}
