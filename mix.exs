@@ -33,12 +33,12 @@ defmodule FacebookMessenger.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:poison, "~> 2.1.0", override: true},
+    [{:poison, "~> 2.1.0"},
      {:httpotion, "~> 2.2"},
      {:phoenix, "~> 1.1"},
      {:coverex, "~> 1.4.8", only: :test},
      {:inch_ex, only: :docs},
-     {:ex_doc, "~> 0.7", only: :docs},
+     {:ex_doc, "~> 0.7", only: :dev},
      {:earmark, "~> 0.1", only: :docs}]
   end
 
