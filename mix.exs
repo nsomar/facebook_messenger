@@ -3,18 +3,24 @@ defmodule FacebookMessenger.Mixfile do
 
   def project do
     [app: :facebook_messenger,
-     version: "0.0.1",
-     elixir: "~> 1.1",
+     name: "ExFacebookMessenger",
+     source_url: "https://github.com/oarrabi/EXFacebook-Messenger",
+     version: "0.1.0",
+     docs: [ extras: ["README.md"] ],
+     elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     deps: deps]
+     test_coverage: [tool: Coverex.Task, coveralls: true],
+     deps: deps,
+     package: package,
+     description: description]
   end
 
   # Configuration for the OTP application
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    [applications: [:logger, :httpotion]]
   end
 
   # Dependencies can be Hex packages:
@@ -27,8 +33,24 @@ defmodule FacebookMessenger.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    [{:poison, "~> 2.1.0"},
+    [{:poison, "~> 2.1.0", override: true},
      {:httpotion, "~> 2.2"},
-     {:phoenix, "~> 1.1"}]
+     {:phoenix, "~> 1.1"},
+     {:coverex, "~> 1.4.8", only: :test},
+     {:inch_ex, only: :docs},
+     {:ex_doc, "~> 0.7", only: :docs},
+     {:earmark, "~> 0.1", only: :docs}]
+  end
+
+  defp description do
+    """
+    ExFacebookMessenger is a library that easy the creation of facebook messenger bots.
+    """
+  end
+
+  defp package do
+    [ files: [ "lib", "mix.exs", "README.md",],
+      maintainers: [ "Omar Abdelhafith" ],
+      links: %{ "GitHub" => "https://github.com/oarrabi/exrequester" } ]
   end
 end
