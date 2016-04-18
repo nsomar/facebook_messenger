@@ -10,13 +10,13 @@ defmodule FacebookMessenger.Callback do
   @callback message_received(FacebookMessenger.Response) :: any
 
   @doc """
-  called when a challange has been received from facebook and the challange succeeeded
+  called when a challenge has been received from facebook and the challenge succeeeded
   """
-  @callback challange_successfull(any) :: any
+  @callback challenge_successfull(any) :: any
 
   @doc """
-  called when a challange has been received from facebook and the challange failed
+  called when a challenge has been received from facebook and the challenge failed
   """
-  @callback challange_failed(any) :: any
+  @callback challenge_failed(any) :: any
 
 end

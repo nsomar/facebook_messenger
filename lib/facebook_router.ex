@@ -1,10 +1,10 @@
-defmodule FacebookMessenger.Router do
+defmodule FacebookMessenger.Phoenix.Router do
   @moduledoc """
   Router module, this module will be responsible to defines the default routes needed for facebook
   bot communication.
 
   The routes are
-  - get `/api/webhook` for challanges
+  - get `/api/webhook` for challenges
   - post `/api/webhook` for webhook communication
   """
   defmacro __using__(_) do
@@ -17,7 +17,7 @@ defmodule FacebookMessenger.Router do
   function responsible for defining the routes used for facebook messenger bot communication
 
   The routes are:
-  - get `/api/webhook` for challanges
+  - get `/api/webhook` for challenges
   - post `/api/webhook` for webhook communication
 
   It takes a controller that `use FacebookMessenger.Controller`
@@ -59,7 +59,7 @@ defmodule FacebookMessenger.Router do
 
       scope "/" do
         pipe_through :messenger
-        get unquote(path),   unquote(controller), :challange
+        get unquote(path),   unquote(controller), :challenge
         post unquote(path),  unquote(controller), :webhook
       end
     end

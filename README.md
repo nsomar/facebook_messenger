@@ -54,10 +54,10 @@ Go to your `config/config.exs` and add the required configurations
 ```
 config :facebook_messenger,
       facebook_page_token: "Your facebook page token",
-      challange_verification_token: "the challange verify token"
+      challenge_verification_token: "the challenge verify token"
 ```
 
-To get the `facebook_page_token` and `challange_verification_token` follow the instructions [here ](https://developers.facebook.com/docs/messenger-platform/quickstart)
+To get the `facebook_page_token` and `challenge_verification_token` follow the instructions [here ](https://developers.facebook.com/docs/messenger-platform/quickstart)
 
 For the webhook endpoint use `http://your-app-url/webhook`
 

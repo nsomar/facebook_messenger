@@ -5,7 +5,7 @@ defmodule FacebookMessenger.Mixfile do
     [app: :facebook_messenger,
      name: "ExFacebookMessenger",
      source_url: "https://github.com/oarrabi/EXFacebook-Messenger",
-     version: "0.1.0",
+     version: "0.2.0",
      docs: [ extras: ["README.md"] ],
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
