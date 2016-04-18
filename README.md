@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/oarrabi/EXFacebook-Messenger/badge.svg?branch=master)](https://coveralls.io/github/oarrabi/EXFacebook-Messenger?branch=master)
 [![Inline docs](http://inch-ci.org/github/oarrabi/EXFacebook-Messenger.svg?branch=master)](http://inch-ci.org/github/oarrabi/EXFacebook-Messenger)
 
-ExFacebookMessenger is a library that easy the creation of facebook messenger bots.
+ExFacebookMessenger is a library that helps you create facebook messenger bots easily.
 
 ## Installation
 
