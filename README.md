@@ -11,7 +11,7 @@ ExFacebookMessenger is a library that helps you create facebook messenger bots e
 
 ```
 def deps do
-  [{:facebook_messenger, "~> 0.2.0"}]
+  [{:facebook_messenger, "~> 0.3.0"}]
 end
 ```
 
