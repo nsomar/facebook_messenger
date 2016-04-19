@@ -55,7 +55,7 @@ To get the `facebook_page_token` and `challenge_verification_token` follow the i
 
 For the webhook endpoint use `http://your-app-url/messenger/webhook`
 
-### With Pheonix
+### With Phoenix
 If you use phoenix framework in your project, then you need the phoenix version of `facebook_messenger` this can be found at `phoenix_facebook_messenger` [found here](https://github.com/oarrabi/phoenix_facebook_messenger).
 
 ## Sample
