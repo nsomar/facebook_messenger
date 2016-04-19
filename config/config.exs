@@ -8,16 +8,18 @@ config :logger,
 case Mix.env do
   :test ->
     config :facebook_messenger,
-      request_manager: FacebookMessenger.RequestManager.Mock,
       facebook_page_token: "PAGE_TOKEN",
-      challenge_verification_token: "123123",
+      challenge_verification_token: "VERIFY_TOKEN",
+      endpoint: "/messenger/webhook",
+      request_manager: FacebookMessenger.RequestManager.Mock,
       responder: FacebookMessenger.Responder.Mock
 
   :dev ->
     config :facebook_messenger,
-      request_manager: FacebookMessenger.RequestManager,
       facebook_page_token: "PAGE_TOKEN",
-      challenge_verification_token: "123123",
+      challenge_verification_token: "VERIFY_TOKEN",
+      endpoint: "/messenger/webhook",
+      request_manager: FacebookMessenger.RequestManager,
       responder: FacebookMessenger.Responder
 
   _ -> true
