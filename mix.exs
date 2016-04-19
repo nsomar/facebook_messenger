@@ -5,7 +5,7 @@ defmodule FacebookMessenger.Mixfile do
     [app: :facebook_messenger,
      name: "ExFacebookMessenger",
      source_url: "https://github.com/oarrabi/EXFacebook-Messenger",
-     version: "0.1.0",
+     version: "0.2.0",
      docs: [ extras: ["README.md"] ],
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
@@ -35,7 +35,7 @@ defmodule FacebookMessenger.Mixfile do
   defp deps do
     [{:poison, "~> 2.1.0", override: true},
      {:httpotion, "~> 2.2"},
-     {:phoenix, "~> 1.1"},
+     {:plug, "> 0.0.0"},
      {:coverex, "~> 1.4.8", only: :test},
      {:inch_ex, only: :docs},
      {:ex_doc, "~> 0.7", only: :dev},

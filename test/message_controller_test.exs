@@ -1,84 +1,59 @@
-
-defmodule TestController do
-  use FacebookMessenger.Controller
-
-  def message_received(msg) do
-    text = FacebookMessenger.Response.message_texts(msg) |> hd
-    sender = FacebookMessenger.Response.message_senders(msg) |> hd
-    FacebookMessenger.Sender.send(sender, text)
-  end
-end
-
 defmodule FacebookMessenger.Controller.Test do
-  use Test.ConnCase
+  use ExUnit.Case
 
-  test "it returns the passed challange if token matches" do
-    conn = Map.put(conn(), :request_path, "/webhook/api")
-    TestController.challange(conn, %{"hub.mode" => "subscribe",
-                "hub.verify_token" => "123123",
-                "hub.challenge" => "1234567"})
-    assert_receive {"/webhook/api", 1234567}
+  test "it returns the passed challenge if token matches" do
+    challenge = %{"hub.mode" => "subscribe",
+                "hub.verify_token" => "VERIFY_TOKEN",
+                "hub.challenge" => "1234567"}
+    assert FacebookMessenger.check_challenge(challenge) == {:ok, "1234567"}
   end
 
   test "it returns error if webhook token does not match" do
-    conn = Map.put(conn(), :request_path, "/webhook/api")
-    TestController.challange(conn, %{"hub.mode" => "subscribe",
-                "hub.verify_token" => "1",
-                "hub.challenge" => "1234567"})
-    assert_receive {"/webhook/api", %{error: %{params: %{"hub.challenge" => "1234567", "hub.mode" => "subscribe", "hub.verify_token" => "1"}, path: "/webhook/api"}}}
+    challenge = %{"hub.mode" => "subscribe",
+                  "hub.verify_token" => "1",
+                  "hub.challenge" => "1234567"}
+    assert FacebookMessenger.check_challenge(challenge) == :error
   end
 
   test "it gets the callback successful event" do
-    defmodule TestController2 do
-      use FacebookMessenger.Controller
-
-      def challange_successfull(params) do
-        send(self, 1)
-      end
-    end
-
-    conn = Map.put(conn(), :request_path, "/webhook/api")
-    TestController2.challange(conn, %{"hub.mode" => "subscribe",
-                "hub.verify_token" => "123123",
-                "hub.challenge" => "1234567"})
-    assert_receive 1
-  end
-
-   test "it gets the callback failed event" do
-    defmodule TestController2 do
-      use FacebookMessenger.Controller
-
-      def challange_failed(params) do
-        send(self, 2)
-      end
-    end
-
-    conn = Map.put(conn(), :request_path, "/webhook/api")
-    TestController2.challange(conn, %{"hub.mode" => "subscribe",
-                "hub.verify_token" => "222",
-                "hub.challenge" => "1234567"})
-    assert_receive 2
+    challenge = %{"hub.mode" => "subscribe",
+                  "hub.verify_token" => "VERIFY_TOKEN",
+                  "hub.challenge" => "1234567"}
+    assert FacebookMessenger.check_challenge(challenge) == {:ok, "1234567"}
   end
 
   test "it returns error if webhook is not valid" do
-    conn = Map.put(conn(), :request_path, "/webhook/api")
-    TestController.challange(conn, 1)
-    assert_receive {"/webhook/api", %{error: %{params: 1, path: "/webhook/api"}}}
+    assert FacebookMessenger.check_challenge(1) == :error
   end
 
   test "it receives a message" do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
     {:ok, json} = file |> Poison.decode
 
-    conn = Map.put(conn(), :request_path, "/webhook/message")
-    TestController.webhook(conn, json)
-    assert_receive %{body: "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":{\"text\":\"hello\"}}", url: "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_TOKEN"}
-       {"/webhook/message", ""}
+    assert FacebookMessenger.parse_message(json) == {:ok,
+            %FacebookMessenger.Response{entry: [%FacebookMessenger.Entry{id: "PAGE_ID",
+               messaging: [%FacebookMessenger.Messaging{message: %FacebookMessenger.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
+                  seq: 216, text: "hello"},
+                 recipient: %FacebookMessenger.User{id: "PAGE_ID"},
+                 sender: %FacebookMessenger.User{id: "USER_ID"},
+                 timestamp: 1460245672080}], time: 1460245674269}],
+             object: "page"}}
+  end
+
+  test "it receives a message in string" do
+    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
+
+    assert FacebookMessenger.parse_message(file) == {:ok,
+            %FacebookMessenger.Response{entry: [%FacebookMessenger.Entry{id: "PAGE_ID",
+               messaging: [%FacebookMessenger.Messaging{message: %FacebookMessenger.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
+                  seq: 216, text: "hello"},
+                 recipient: %FacebookMessenger.User{id: "PAGE_ID"},
+                 sender: %FacebookMessenger.User{id: "USER_ID"},
+                 timestamp: 1460245672080}], time: 1460245674269}],
+             object: "page"}}
   end
 
   test "it handles bad messages" do
-    conn = Map.put(conn(), :request_path, "/webhook/message")
-    TestController.webhook(conn, 1)
-    assert_receive {"/webhook/message", ""}
+    assert FacebookMessenger.parse_message(1) == :error
   end
 end
