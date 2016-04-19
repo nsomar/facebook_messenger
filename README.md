@@ -11,44 +11,38 @@ ExFacebookMessenger is a library that easy the creation of facebook messenger bo
 
 ```
 def deps do
-  [{:facebook_messenger, "~> 0.1.0"}]
+  [{:facebook_messenger, "~> 0.2.0"}]
 end
 ```
 
-## Requirements
-- a Phoenix App with phoenix `1.1` and up
 
 ## Usage
-You need to have a working phoenix app to use ExFacebookMessenger.
 
+### With plug
 To create an echo back bot, do the following:
 
-Create a new controller `web/controller/test_controller.ex`
+In your `Plug.Router` define a `forward` with a route to `FacebookMessenger.Router`
 
 ```
-defmodule TestController do
-  use FacebookMessenger.Controller
+defmodule Sample.Router do
+  use Plug.Router
+  ...
 
-  def message_received(msg) do
+  forward "/messenger/webhook",
+    to: FacebookMessenger.Router,
+    message_received: &Sample.Router.message/1
+
+  def message(msg) do
     text = FacebookMessenger.Response.message_texts(msg) |> hd
     sender = FacebookMessenger.Response.message_senders(msg) |> hd
     FacebookMessenger.Sender.send(sender, text)
   end
-end
+enda
+
 ```
 
-Add the required routes in `web/router.ex`
-```
-defmodule YourApp.Router do
-  use YourApp.Web, :router
-
-  # Add these two lines
-  use FacebookMessenger.Router
-  facebook_routes "webhook", TestController
-end
-```
 This defines a webhook endpoint at:
-`http://your-app-url/webhook`
+`http://your-app-url/messenger/webhook`
 
 Go to your `config/config.exs` and add the required configurations
 ```
@@ -59,14 +53,16 @@ config :facebook_messenger,
 
 To get the `facebook_page_token` and `challenge_verification_token` follow the instructions [here ](https://developers.facebook.com/docs/messenger-platform/quickstart)
 
-For the webhook endpoint use `http://your-app-url/webhook`
+For the webhook endpoint use `http://your-app-url/messenger/webhook`
+
+### With Pheonix
+If you use phoenix framework in your project, then you need the phoenix version of `facebook_messenger` this can be found at `phoenix_facebook_messenger` [found here](https://github.com/oarrabi/phoenix_facebook_messenger).
 
 ## Sample
 A sample facebook chat echo bot can be found [here](https://github.com/oarrabi/elixir-echo-bot).
 
 ## Future Improvements
 
-- [ ] Better tests
 - [ ] Handle other types of facebook messages
 - [ ] Support sending facebook structure messages
 - [ ] Handle facebook postback messages
