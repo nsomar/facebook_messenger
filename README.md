@@ -59,7 +59,9 @@ For the webhook endpoint use `http://your-app-url/messenger/webhook`
 If you use phoenix framework in your project, then you need the phoenix version of `facebook_messenger` this can be found at `phoenix_facebook_messenger` [found here](https://github.com/oarrabi/phoenix_facebook_messenger).
 
 ## Sample
-A sample facebook chat echo bot can be found [here](https://github.com/oarrabi/elixir-echo-bot).
+
+- A sample facebook echo bot with plug can be found here. https://github.com/oarrabi/ex-plug-echo-bot
+- For the phoenix echo bot, https://github.com/oarrabi/elixir-echo-bot
 
 ## Future Improvements
 
