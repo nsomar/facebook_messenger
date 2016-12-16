@@ -33,7 +33,7 @@ defmodule FacebookMessenger.Mixfile do
   #
   # Type "mix help deps" for more examples and options
   defp deps do
-    d = [{:httpotion, "~> 2.2"},
+    d = [{:httpotion, "~> 3.0.2"},
          {:plug, "> 0.0.0"},
          {:inch_ex, "> 0.0.0", only: :docs},
          {:ex_doc, "~> 0.7", only: :dev},
