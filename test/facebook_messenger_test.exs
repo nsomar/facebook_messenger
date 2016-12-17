@@ -42,6 +42,14 @@ defmodule FacebookMessenger.Message.Test do
     assert res == ["hello"]
   end
 
+  test "it gets the postback payload from the response" do
+    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_postback.json")
+
+    res = FacebookMessenger.Response.parse(file)
+    res = res |> FacebookMessenger.Response.type
+    assert res == "postback"
+  end
+
   test "it gets the message sender id" do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
     res = FacebookMessenger.Response.parse(file)
