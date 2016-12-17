@@ -3,7 +3,7 @@ defmodule FacebookMessenger.Messaging do
   Facebook messaging structure, contains the sender, recepient and message info
   """
   @derive [Poison.Encoder]
-  defstruct [:sender, :recipient, :timestamp, :message]
+  defstruct [:sender, :recipient, :timestamp, :message, :postback]
 
   @type t :: %FacebookMessenger.Messaging{
     sender: FacebookMessenger.User.t,

@@ -4,9 +4,10 @@ defmodule FacebookMessenger.Postback do
   """
 
   @derive [Poison.Encoder]
-  defstruct [:payload]
+  defstruct [:payload, :referral]
 
   @type t :: %FacebookMessenger.Postback{
-    payload: String.t
+    payload: String.t,
+    referral: FacebookMessenger.Referral
   }
 end

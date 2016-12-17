@@ -4,6 +4,7 @@ defmodule FacebookMessenger.Response do
   """
 
   @derive [Poison.Encoder]
+  @postback_regex ~r/postback/
   defstruct [:object, :entry]
 
   @doc """
@@ -12,7 +13,8 @@ defmodule FacebookMessenger.Response do
   @spec parse(map) :: FacebookMessenger.Response.t
 
   def parse(param) when is_map(param) do
-    Poison.Decode.decode(param, as: decoding_map)
+    decoder = param |> get_parser |> decoding_map
+    Poison.Decode.decode(param, as: decoder)
   end
 
   @doc """
@@ -21,7 +23,8 @@ defmodule FacebookMessenger.Response do
   @spec parse(String.t) :: FacebookMessenger.Response.t
 
   def parse(param) when is_binary(param) do
-    Poison.decode!(param, as: decoding_map)
+    decoder = param |> get_parser |> decoding_map
+    Poison.decode!(param, as: decoder)
   end
 
   @doc """
@@ -35,7 +38,7 @@ defmodule FacebookMessenger.Response do
   end
 
   @doc """
-  Retrun an list of message sender Ids from a `FacebookMessenger.Response`
+  Return an list of message sender Ids from a `FacebookMessenger.Response`
   """
   @spec message_senders(FacebookMessenger.Response) :: [String.t]
   def message_senders(%{entry: entries}) do
@@ -44,14 +47,51 @@ defmodule FacebookMessenger.Response do
     |> Enum.map(&( &1 |> Map.get(:sender) |> Map.get(:id)))
   end
 
+  @doc """
+  Return user defined postback payload from a `FacebookMessenger.Response`
+  """
+  @spec get_postback_payload(FacebookMessenger.Response) :: String.t
+  def get_postback_payload(%{entry: entries}) do
+    postback =
+      Enum.flat_map(entries, &Map.get(&1, :messaging))
+      |> Enum.map(&Map.get(&1, :postback))
+      |> List.last
 
-  defp decoding_map do
-     messaging_parser =
+    postback.payload
+  end
+
+  defp postback_parser do
     %FacebookMessenger.Messaging{
       "sender": %FacebookMessenger.User{},
       "recipient": %FacebookMessenger.User{},
-      "message": %FacebookMessenger.Message{},
+      "postback": %FacebookMessenger.Postback{}
     }
+  end
+
+  defp get_parser(param) when is_binary(param) do
+    cond do
+      String.match?(param, @postback_regex) -> postback_parser
+      true -> text_message_parser
+    end
+  end
+
+  defp get_parser(param) when is_map(param) do
+    cond do
+      Map.has_key?(param, :postback) -> postback_parser
+      Map.has_key?(param, :message) -> text_message_parser
+      true -> text_message_parser
+    end
+  end
+
+  defp text_message_parser do
+    %FacebookMessenger.Messaging{
+      "sender": %FacebookMessenger.User{},
+      "recipient": %FacebookMessenger.User{},
+      "message": %FacebookMessenger.Message{}
+    }
+  end
+
+  defp decoding_map(messaging_parser) do
     %FacebookMessenger.Response{
       "entry": [%FacebookMessenger.Entry{
         "messaging": [messaging_parser]
@@ -62,5 +102,4 @@ defmodule FacebookMessenger.Response do
     object: String.t,
     entry: FacebookMessenger.Entry.t
   }
-
 end

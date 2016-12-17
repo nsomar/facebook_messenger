@@ -1,4 +1,3 @@
-
 defmodule FacebookMessenger.Message.Test do
   use ExUnit.Case
 
@@ -42,12 +41,14 @@ defmodule FacebookMessenger.Message.Test do
     assert res == ["hello"]
   end
 
-  test "it gets the postback payload from the response" do
+  test "it gets the message postback from the response" do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_postback.json")
 
-    res = FacebookMessenger.Response.parse(file)
-    res = res |> FacebookMessenger.Response.type
-    assert res == "postback"
+    postback_payload =
+      FacebookMessenger.Response.parse(file)
+      |> FacebookMessenger.Response.get_postback_payload
+
+    assert postback_payload == "USER_DEFINED_PAYLOAD"
   end
 
   test "it gets the message sender id" do
