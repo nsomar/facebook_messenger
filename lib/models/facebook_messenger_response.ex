@@ -43,29 +43,21 @@ defmodule FacebookMessenger.Response do
   @spec message_senders(FacebookMessenger.Response) :: [String.t]
   def message_senders(%{entry: entries}) do
     messaging =
-    Enum.flat_map(entries, &Map.get(&1, :messaging))
+    entries
+    |> get_messsaging
     |> Enum.map(&( &1 |> Map.get(:sender) |> Map.get(:id)))
   end
 
   @doc """
   Return user defined postback payload from a `FacebookMessenger.Response`
   """
-  @spec get_postback_payload(FacebookMessenger.Response) :: String.t
-  def get_postback_payload(%{entry: entries}) do
+  @spec get_postback(FacebookMessenger.Response) :: FacebookMessenger.Postback.t
+  def get_postback(%{entry: entries}) do
     postback =
-      Enum.flat_map(entries, &Map.get(&1, :messaging))
+      entries
+      |> get_messsaging
       |> Enum.map(&Map.get(&1, :postback))
-      |> List.last
-
-    postback.payload
-  end
-
-  defp postback_parser do
-    %FacebookMessenger.Messaging{
-      "sender": %FacebookMessenger.User{},
-      "recipient": %FacebookMessenger.User{},
-      "postback": %FacebookMessenger.Postback{}
-    }
+      |> hd
   end
 
   defp get_parser(param) when is_binary(param) do
@@ -75,12 +67,27 @@ defmodule FacebookMessenger.Response do
     end
   end
 
-  defp get_parser(param) when is_map(param) do
+  defp get_parser(%{"entry" => entries})  do
+
+    map = entries |> get_messsaging |> hd
+
     cond do
-      Map.has_key?(param, :postback) -> postback_parser
-      Map.has_key?(param, :message) -> text_message_parser
+      Map.has_key?(map, "postback") -> postback_parser
+      Map.has_key?(map, "message") -> text_message_parser
       true -> text_message_parser
     end
+  end
+
+  defp get_messsaging(entries) do
+    Enum.flat_map(entries, &Map.get(&1, :messaging))
+  end
+
+  defp postback_parser do
+    %FacebookMessenger.Messaging{
+      "sender": %FacebookMessenger.User{},
+      "recipient": %FacebookMessenger.User{},
+      "postback": %FacebookMessenger.Postback{}
+    }
   end
 
   defp text_message_parser do

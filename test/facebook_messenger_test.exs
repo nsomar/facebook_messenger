@@ -1,7 +1,7 @@
 defmodule FacebookMessenger.Message.Test do
   use ExUnit.Case
 
-  test "it gets initialized from a string" do
+  test "text message gets initialized from a string" do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
 
     res = FacebookMessenger.Response.parse(file)
@@ -17,7 +17,7 @@ defmodule FacebookMessenger.Message.Test do
     assert message.text == "hello"
   end
 
-  test "it gets initialized from a json" do
+  test "text message gets initialized from a json" do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
     {:ok, json} = file |> Poison.decode
 
@@ -34,21 +34,33 @@ defmodule FacebookMessenger.Message.Test do
     assert message.text == "hello"
   end
 
-  test "it gets the message text from the response" do
+    test "postback gets initialized from a json" do
+      {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_postback.json")
+      {:ok, json} = file |> Poison.decode
+
+      res = FacebookMessenger.Response.parse(json)
+      messaging = res.entry |> hd |> Map.get(:messaging)
+
+      postback = messaging |> hd |> Map.get(:postback)
+
+      assert postback.payload == "USER_DEFINED_PAYLOAD"
+    end
+
+  test "text message gets the message text from the response" do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
     res = FacebookMessenger.Response.parse(file)
     res = FacebookMessenger.Response.message_texts(res)
     assert res == ["hello"]
   end
 
-  test "it gets the message postback from the response" do
+  test "postback gets the postback payload from the response" do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_postback.json")
 
-    postback_payload =
+    postback =
       FacebookMessenger.Response.parse(file)
-      |> FacebookMessenger.Response.get_postback_payload
+      |> FacebookMessenger.Response.get_postback
 
-    assert postback_payload == "USER_DEFINED_PAYLOAD"
+    assert postback.payload == "USER_DEFINED_PAYLOAD"
   end
 
   test "it gets the message sender id" do
