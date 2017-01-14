@@ -1,4 +1,5 @@
 defmodule FacebookMessenger.Response do
+  require IEx
   @moduledoc """
   Facebook messenger response structure
   """
@@ -21,20 +22,21 @@ defmodule FacebookMessenger.Response do
   Decode a string into a `FacebookMessenger.Response`
   """
   @spec parse(String.t) :: FacebookMessenger.Response.t
-
   def parse(param) when is_binary(param) do
     decoder = param |> get_parser |> decoding_map
     Poison.decode!(param, as: decoder)
   end
 
   @doc """
-  Retrun an list of message texts from a `FacebookMessenger.Response`
+  Return an list of message texts from a `FacebookMessenger.Response`
   """
   @spec message_texts(FacebookMessenger.Response) :: [String.t]
   def message_texts(%{entry: entries}) do
     messaging =
-    Enum.flat_map(entries, &Map.get(&1, :messaging))
-    |> Enum.map(&( &1 |> Map.get(:message) |> Map.get(:text)))
+      entries
+      |> get_messaging_struct
+      |> Enum.map(&( &1 |> Map.get(:message)
+      |> Map.get(:text)))
   end
 
   @doc """
@@ -42,9 +44,8 @@ defmodule FacebookMessenger.Response do
   """
   @spec message_senders(FacebookMessenger.Response) :: [String.t]
   def message_senders(%{entry: entries}) do
-    messaging =
     entries
-    |> get_messsaging
+    |> get_messaging_struct
     |> Enum.map(&( &1 |> Map.get(:sender) |> Map.get(:id)))
   end
 
@@ -53,11 +54,10 @@ defmodule FacebookMessenger.Response do
   """
   @spec get_postback(FacebookMessenger.Response) :: FacebookMessenger.Postback.t
   def get_postback(%{entry: entries}) do
-    postback =
-      entries
-      |> get_messsaging
-      |> Enum.map(&Map.get(&1, :postback))
-      |> hd
+    entries
+    |> get_messaging_struct
+    |> Enum.map(&Map.get(&1, :postback))
+    |> hd
   end
 
   defp get_parser(param) when is_binary(param) do
@@ -67,19 +67,17 @@ defmodule FacebookMessenger.Response do
     end
   end
 
-  defp get_parser(%{"entry" => entries})  do
-
-    map = entries |> get_messsaging |> hd
+  defp get_parser(%{"entry" => entries} = param) when is_map(param) do
+    messaging = entries |> get_messaging_struct("messaging") |> hd
 
     cond do
-      Map.has_key?(map, "postback") -> postback_parser
-      Map.has_key?(map, "message") -> text_message_parser
-      true -> text_message_parser
+      Map.has_key?(messaging, "postback") -> postback_parser
+      Map.has_key?(messaging, "message") -> text_message_parser
     end
   end
 
-  defp get_messsaging(entries) do
-    Enum.flat_map(entries, &Map.get(&1, :messaging))
+  defp get_messaging_struct(entries, messaging_key \\ :messaging) do
+    Enum.flat_map(entries, &Map.get(&1, messaging_key))
   end
 
   defp postback_parser do
