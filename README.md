@@ -9,7 +9,7 @@ ExFacebookMessenger is a library that helps you create facebook messenger bots e
 
 ## Installation
 
-```
+```elixir
 def deps do
   [{:facebook_messenger, "~> 0.3.0"}]
 end
@@ -23,7 +23,7 @@ To create an echo back bot, do the following:
 
 In your `Plug.Router` define a `forward` with a route to `FacebookMessenger.Router`
 
-```
+```elixir
 defmodule Sample.Router do
   use Plug.Router
   ...
@@ -67,7 +67,8 @@ This defines a webhook endpoint at:
 `http://your-app-url/messenger/webhook`
 
 Go to your `config/config.exs` and add the required configurations
-```
+
+```elixir
 config :facebook_messenger,
       facebook_page_token: "Your facebook page token",
       challenge_verification_token: "the challenge verify token"
