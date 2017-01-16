@@ -48,7 +48,7 @@ defmodule YourApplication do
     sender = FacebookMessenger.Response.message_senders(message) |> hd
 
     case message.payload do
-      "USER_CLICKED_BUTTON" -> FacebookMessenger.Sender.send(sender, text)
+      "USER_CLICKED_BUTTON" -> FacebookMessenger.Sender.send(sender, "You have clicked the button")
       _ -> FacebookMessenger.Sender.send(sender, "I can't handle this message")
     end
   end
@@ -88,6 +88,6 @@ If you use phoenix framework in your project, then you need the phoenix version 
 
 ## Future Improvements
 
-- [x] Handle other types of facebook messages
+- [ ] Handle other types of facebook messages
 - [ ] Support sending facebook structure messages
-- [ ] Handle facebook postback messages
+- [x] Handle facebook postback messages
