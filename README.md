@@ -32,7 +32,7 @@ defmodule Sample.Router do
     to: FacebookMessenger.Router,
     message_received: &Sample.Router.message/1
 
-  def message(msg) d
+  def message(msg) do
     message = FacebookMessenger.Response.parse(msg)
 
     case message.type do
@@ -88,6 +88,6 @@ If you use phoenix framework in your project, then you need the phoenix version 
 
 ## Future Improvements
 
-- [ ] Handle other types of facebook messages
+- [x] Handle other types of facebook messages
 - [ ] Support sending facebook structure messages
 - [ ] Handle facebook postback messages
