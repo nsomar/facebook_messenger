@@ -82,6 +82,7 @@ defmodule FacebookMessenger.Response do
 
   defp postback_parser do
     %FacebookMessenger.Messaging{
+      "type": "postback",
       "sender": %FacebookMessenger.User{},
       "recipient": %FacebookMessenger.User{},
       "postback": %FacebookMessenger.Postback{}
@@ -90,6 +91,7 @@ defmodule FacebookMessenger.Response do
 
   defp text_message_parser do
     %FacebookMessenger.Messaging{
+      "type": "message",
       "sender": %FacebookMessenger.User{},
       "recipient": %FacebookMessenger.User{},
       "message": %FacebookMessenger.Message{}

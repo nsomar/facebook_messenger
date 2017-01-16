@@ -32,12 +32,34 @@ defmodule Sample.Router do
     to: FacebookMessenger.Router,
     message_received: &Sample.Router.message/1
 
-  def message(msg) do
-    text = FacebookMessenger.Response.message_texts(msg) |> hd
-    sender = FacebookMessenger.Response.message_senders(msg) |> hd
+  def message(msg) d
+    message = FacebookMessenger.Response.parse(msg)
+
+    case message.type do
+      "postback" -> YourApplication.process_postback(message)
+      "message" -> YourApplication.proccess_text_message(message)
+      _ -> YourApplication.handle_default(message)
+    end
+  end
+end
+
+defmodule YourApplication do
+  def process_postback(message) do
+    sender = FacebookMessenger.Response.message_senders(message) |> hd
+
+    case message.payload do
+      "USER_CLICKED_BUTTON" -> FacebookMessenger.Sender.send(sender, text)
+      _ -> FacebookMessenger.Sender.send(sender, "I can't handle this message")
+    end
+  end
+
+
+  def process_text_message(message) do
+    text = FacebookMessenger.Response.message_texts(message) |> hd
+    sender = FacebookMessenger.Response.message_senders(message) |> hd
     FacebookMessenger.Sender.send(sender, text)
   end
-enda
+end
 
 ```
 
