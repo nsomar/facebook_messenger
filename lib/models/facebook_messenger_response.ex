@@ -1,5 +1,4 @@
 defmodule FacebookMessenger.Response do
-  require IEx
   @moduledoc """
   Facebook messenger response structure
   """
