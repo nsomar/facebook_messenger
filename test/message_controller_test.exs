@@ -32,7 +32,9 @@ defmodule FacebookMessenger.Controller.Test do
 
     assert FacebookMessenger.parse_message(json) == {:ok,
             %FacebookMessenger.Response{entry: [%FacebookMessenger.Entry{id: "PAGE_ID",
-               messaging: [%FacebookMessenger.Messaging{message: %FacebookMessenger.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
+               messaging: [%FacebookMessenger.Messaging{
+                type: "message",
+                message: %FacebookMessenger.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
                   seq: 216, text: "hello"},
                  recipient: %FacebookMessenger.User{id: "PAGE_ID"},
                  sender: %FacebookMessenger.User{id: "USER_ID"},
@@ -45,7 +47,8 @@ defmodule FacebookMessenger.Controller.Test do
 
     assert FacebookMessenger.parse_message(file) == {:ok,
             %FacebookMessenger.Response{entry: [%FacebookMessenger.Entry{id: "PAGE_ID",
-               messaging: [%FacebookMessenger.Messaging{message: %FacebookMessenger.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
+               messaging: [%FacebookMessenger.Messaging{type: "message",
+                  message: %FacebookMessenger.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
                   seq: 216, text: "hello"},
                  recipient: %FacebookMessenger.User{id: "PAGE_ID"},
                  sender: %FacebookMessenger.User{id: "USER_ID"},
