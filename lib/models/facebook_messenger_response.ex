@@ -27,6 +27,14 @@ defmodule FacebookMessenger.Response do
   end
 
   @doc """
+  Get shorter representation of message data
+  """
+  @spec get_messaging(FacebookMessenger.Response.t) :: FacebookMessenger.Messaging.t
+  def get_messaging(%{entry: entries}) do
+    entries |> hd |> Map.get(:messaging) |> hd
+  end
+
+  @doc """
   Return an list of message texts from a `FacebookMessenger.Response`
   """
   @spec message_texts(FacebookMessenger.Response) :: [String.t]
