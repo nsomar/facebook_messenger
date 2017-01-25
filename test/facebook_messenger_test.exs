@@ -39,11 +39,10 @@ defmodule FacebookMessenger.Message.Test do
       {:ok, json} = file |> Poison.decode
 
       res = FacebookMessenger.Response.parse(json)
-      messaging = res.entry |> hd |> Map.get(:messaging)
+      messaging = res |> FacebookMessenger.Response.get_messaging
 
-      postback = messaging |> hd |> Map.get(:postback)
-
-      assert postback.payload == "USER_DEFINED_PAYLOAD"
+      assert messaging.type == "postback"
+      assert messaging.postback.payload == "USER_DEFINED_PAYLOAD"
     end
 
   test "text message gets the message text from the response" do

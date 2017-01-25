@@ -34,6 +34,7 @@ defmodule Sample.Router do
 
   def message(msg) do
     message = FacebookMessenger.Response.parse(msg)
+      |> FacebookMessenger.Response.get_messaging
 
     case message.type do
       "postback" -> YourApplication.process_postback(message)
