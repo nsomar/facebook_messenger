@@ -11,9 +11,9 @@ defmodule TestBotOne.MessageSenderTest do
     %{message: %{text: "Hello"}, recipient: %{id: 1055439761215256}}
   end
 
-  test "creates a correct payload in json" do
-    assert FacebookMessenger.Sender.json_payload(1055439761215256, "Hello") ==
-    "{\"recipient\":{\"id\":1055439761215256},\"message\":{\"text\":\"Hello\"}}"
+  test "converts hash to json"do
+    assert FacebookMessenger.Sender.to_json(%{test_key: "test_value"}) ==
+    "{\"test_key\":\"test_value\"}"
   end
 
   test "sends correct message" do
