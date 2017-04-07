@@ -14,7 +14,7 @@ defmodule FacebookMessenger.Sender do
   def send(recepient, message) do
     res = manager.post(
       url: url,
-      body: json_payload(recepient, message)
+      body: payload(recepient, message) |> to_json
     )
     Logger.info("response from FB #{inspect(res)}")
     res
@@ -34,13 +34,12 @@ defmodule FacebookMessenger.Sender do
   end
 
   @doc """
-  creates a json payload to send to facebook
+  converts a map to json using poison
 
-    * :recepient - the recepient to send the message to
-    * :message - the message to send
+  * :map - the map to be converted to json
   """
-  def json_payload(recepient, message) do
-    payload(recepient, message)
+  def to_json(map) do
+    map
     |> Poison.encode
     |> elem(1)
   end
