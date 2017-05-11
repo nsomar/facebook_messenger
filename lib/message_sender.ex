@@ -27,10 +27,13 @@ defmodule FacebookMessenger.Sender do
 
   * :recipient - the recipient to send the message to
   * :message - the message to send
+  * :quick_replies - list of quick replies
+
+  https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
   """
-  @spec send(String.t, String.t) :: HTTPotion.Response.t
-  def send(recipient, message) do
-    post_to_recipient(recipient, %{message: %{text: message}})
+  @spec send(String.t, String.t, [map()]) :: HTTPotion.Response.t
+  def send(recipient, message, quick_replies \\ []) do
+    post_to_recipient(recipient, %{message: %{text: message, quick_replies: quick_replies}})
   end
 
   @doc """
@@ -41,12 +44,44 @@ defmodule FacebookMessenger.Sender do
   """
   @spec send_image(String.t, String.t) :: HTTPotion.Response.t
   def send_image(recipient, image_url) do
-    payload =
-      %{message:
-        %{attachment:
-          %{type: "image",
-            payload: %{url: image_url}}
-        }}
+    send_content(recipient, "image", image_url)
+  end
+
+  @doc """
+  sends a content item to the URL
+
+  * :recipient - the recipient to send the message to
+  * :content_type - audio | file | image | video
+  * :content_url - the url of the content
+  """
+  @spec send_content(String.t, String.t, String.t) :: HTTPotion.Response.t
+  def send_content(recipient, content_type, content_url) do
+    payload = %{url: content_url}
+    send_attachment(recipient, content_type, payload)
+  end
+
+  @doc """
+  sends a template to the recipient
+
+  * :recipient - the recipient to send the message to
+  * :template - the template payload
+  """
+  @spec send_image(String.t, Map.t) :: HTTPotion.Response.t
+  def send_template(recipient, template) do
+    send_attachment(recipient, "template", template)
+  end
+
+  @doc """
+  send a generic attachment
+
+  * :recipient - the recipient to send the message to
+  * :attachment - map with attachment information
+
+  """
+  @spec send_attachment(String.t, String.t, Map.t) :: HTTPotion.Response.t
+  def send_attachment(recipient, type, payload) do
+    attachment = %{type: type, payload: payload}
+    payload = %{message: %{attachment: attachment}}
     post_to_recipient(recipient, payload)
   end
 
