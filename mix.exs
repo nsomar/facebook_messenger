@@ -11,9 +11,9 @@ defmodule FacebookMessenger.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      test_coverage: [tool: Coverex.Task, coveralls: true],
-     deps: deps,
-     package: package,
-     description: description]
+     deps: deps(),
+     package: package(),
+     description: description()]
   end
 
   # Configuration for the OTP application

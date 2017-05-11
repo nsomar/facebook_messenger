@@ -5,79 +5,49 @@ defmodule FacebookMessenger.Sender do
   require Logger
 
   @doc """
-  sends a message to the the recepient
+  set sender action
 
-    * :recepient - the recepient to send the message to
-    * :message - the message to send
+  * :recipient - the recipient to send the action to
+  * :sender_action - :mark_seen, :typing_on or :typing_off
+  """
+  def sender_action(recipient, sender_action) do
+    post_to_recipient(recipient, %{sender_action: sender_action})
+  end
+
+  defp post_to_recipient(recipient, payload) do
+    body = Map.put(payload, :recipient, %{id: recipient})
+    manager.post(
+      url: url,
+      body: Poison.encode!(body)
+    )
+  end
+
+  @doc """
+  sends a message to the the recipient
+
+  * :recipient - the recipient to send the message to
+  * :message - the message to send
   """
   @spec send(String.t, String.t) :: HTTPotion.Response.t
-  def send(recepient, message) do
-    res = manager.post(
-      url: url,
-      body: text_payload(recepient, message) |> to_json
-    )
-    Logger.info("response from FB #{inspect(res)}")
-    res
+  def send(recipient, message) do
+    post_to_recipient(recipient, %{message: %{text: message}})
   end
 
   @doc """
   sends an image message to the recipient
 
-  * :recepient - the recepient to send the message to
+  * :recipient - the recipient to send the message to
   * :image_url - the url of the image to be sent
   """
   @spec send_image(String.t, String.t) :: HTTPotion.Response.t
-  def send_image(recepient, image_url) do
-    res = manager.post(
-      url: url,
-      body: image_payload(recepient, image_url) |> to_json
-    )
-    Logger.info("response fro FB #{inspect(res)}")
-    res
-  end
-
-  @doc """
-  creates a payload to send to facebook
-
-    * :recepient - the recepient to send the message to
-    * :message - the message to send
-  """
-  def text_payload(recepient, message) do
-    %{
-      recipient: %{id: recepient},
-      message: %{text: message}
-    }
-  end
-
-  @doc """
-  creates a payload for an image message to send to facebook
-
-    * :recepient - the recepient to send the message to
-    * :image_url - the url of the image to be sent
-  """
-  def image_payload(recepient, image_url) do
-    %{
-      recipient: %{id: recepient},
-      message: %{
-        attachment: %{
-          type: "image",
-          payload: %{
-            url: image_url
-          }
-        }
-      }
-    }
-  end
-
-  @doc """
-  converts a map to json using poison
-
-  * :map - the map to be converted to json
-  """
-  def to_json(map) do
-    map
-    |> Poison.encode
-    |> elem(1)
+  def send_image(recipient, image_url) do
+    payload =
+      %{message:
+        %{attachment:
+          %{type: "image",
+            payload: %{url: image_url}}
+        }}
+    post_to_recipient(recipient, payload)
   end
 
   @doc """
