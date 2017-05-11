@@ -4,11 +4,12 @@ defmodule FacebookMessenger.Message do
   """
 
   @derive [Poison.Encoder]
-  defstruct [:mid, :seq, :text]
+  defstruct [:mid, :seq, :text, :attachments]
 
   @type t :: %FacebookMessenger.Message{
     mid: String.t,
     seq: integer,
-    text: String.t
+    text: String.t,
+    attachments: [Map.t]
   }
 end
