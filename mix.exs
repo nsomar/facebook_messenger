@@ -5,15 +5,16 @@ defmodule FacebookMessenger.Mixfile do
     [app: :facebook_messenger,
      name: "ExFacebookMessenger",
      source_url: "https://github.com/oarrabi/facebook_messenger",
-     version: "0.3.0",
+     version: "0.4.0",
      docs: [ extras: ["README.md"] ],
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      test_coverage: [tool: Coverex.Task, coveralls: true],
-     deps: deps,
-     package: package,
-     description: description]
+     deps: deps(),
+     package: package(),
+     licenses: ["MIT"],
+     description: description()]
   end
 
   # Configuration for the OTP application
