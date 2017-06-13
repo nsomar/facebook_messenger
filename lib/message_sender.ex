@@ -32,8 +32,16 @@ defmodule FacebookMessenger.Sender do
   https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
   """
   @spec send(String.t, String.t, [map()]) :: HTTPotion.Response.t
-  def send(recipient, message, quick_replies \\ []) do
-    post_to_recipient(recipient, %{message: %{text: message, quick_replies: quick_replies}})
+  def send(recipient, message, quick_replies \\ nil) do
+    payload = %{message: %{text: message}}
+    payload =
+      case is_list(quick_replies) do
+        true ->
+          put_in(payload, [:message, :quick_replies], quick_replies)
+        false ->
+          payload
+      end
+    post_to_recipient(recipient, payload)
   end
 
   @doc """
