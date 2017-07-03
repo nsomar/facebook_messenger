@@ -102,7 +102,7 @@ defmodule FacebookMessenger.Sender do
   end
 
   defp page_token do
-    Application.get_env(:facebook_messenger, :facebook_page_token)
+    manager().page_token()
   end
 
   defp manager do

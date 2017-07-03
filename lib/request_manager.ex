@@ -6,6 +6,11 @@ defmodule FacebookMessenger.RequestManager do
     HTTPotion.post url,
     body: body, headers: ["Content-Type": "application/json"]
   end
+
+  def page_token() do
+    Application.get_env(:facebook_messenger, :facebook_page_token)
+  end
+
 end
 
 defmodule FacebookMessenger.RequestManager.Mock do
@@ -15,5 +20,9 @@ defmodule FacebookMessenger.RequestManager.Mock do
 
   def post(url: url, body: body) do
     send(self, %{url: url, body: body})
+  end
+
+  def page_token() do
+    Application.get_env(:facebook_messenger, :facebook_page_token)
   end
 end
