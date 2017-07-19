@@ -22,6 +22,30 @@ defmodule FacebookMessenger.Sender do
     )
   end
 
+  ## messenger profile API
+
+  def get_messenger_profile(fields) do
+    manager.get(
+      url: url("messenger_profile", fields: (Enum.join(fields, ",")))
+    )
+  end
+
+  def remove_messenger_profile(fields) do
+    manager.delete(
+      url: url("messenger_profile"),
+      body: Poison.encode!(%{fields: fields})
+    )
+  end
+
+  def set_messenger_profile(payload) do
+    manager.post(
+      url: url("messenger_profile"),
+      body: Poison.encode!(payload)
+    )
+  end
+
+  ## set
+
   @doc """
   sends a message to the the recipient
 
@@ -41,6 +65,7 @@ defmodule FacebookMessenger.Sender do
         false ->
           payload
       end
+    IO.inspect payload, label: "payload"
     post_to_recipient(recipient, payload)
   end
 
@@ -96,9 +121,9 @@ defmodule FacebookMessenger.Sender do
   @doc """
   return the url to hit to send the message
   """
-  def url do
-    query = "access_token=#{page_token}"
-    "https://graph.facebook.com/v2.6/me/messages?#{query}"
+  def url(endpoint \\ "messages", params \\ []) do
+    query = URI.encode_query([{:access_token, page_token()} | params])
+    "https://graph.facebook.com/v2.6/me/#{endpoint}?#{query}"
   end
 
   defp page_token do

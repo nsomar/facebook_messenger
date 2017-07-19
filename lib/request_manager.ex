@@ -4,7 +4,16 @@ defmodule FacebookMessenger.RequestManager do
   """
   def post(url: url, body: body) do
     HTTPotion.post url,
-    body: body, headers: ["Content-Type": "application/json"]
+      body: body, headers: ["Content-Type": "application/json"]
+  end
+
+  def get(url: url) do
+    HTTPotion.get url
+  end
+
+  def delete(url: url, body: body) do
+    HTTPotion.delete url,
+      body: body, headers: ["Content-Type": "application/json"]
   end
 
   def page_token() do
@@ -20,6 +29,14 @@ defmodule FacebookMessenger.RequestManager.Mock do
 
   def post(url: url, body: body) do
     send(self, %{url: url, body: body})
+  end
+
+  def get(url: url, body: body) do
+    send(self, %{url: url})
+  end
+
+  def delete(url: url) do
+    send(self, %{url: url})
   end
 
   def page_token() do
