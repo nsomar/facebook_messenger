@@ -1,4 +1,4 @@
-defmodule FacebookMessenger.Message.Test do
+defmodule FacebookMessenger.Response.Message.Test do
   use ExUnit.Case
 
   test "text message gets initialized from a string" do

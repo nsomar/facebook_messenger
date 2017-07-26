@@ -31,13 +31,13 @@ defmodule FacebookMessenger.Controller.Test do
     {:ok, json} = file |> Poison.decode
 
     assert FacebookMessenger.parse_message(json) == {:ok,
-            %FacebookMessenger.Response{entry: [%FacebookMessenger.Entry{id: "PAGE_ID",
-               messaging: [%FacebookMessenger.Messaging{
+            %FacebookMessenger.Response{entry: [%FacebookMessenger.Response.Entry{id: "PAGE_ID",
+               messaging: [%FacebookMessenger.Response.Messaging{
                 type: "message",
-                message: %FacebookMessenger.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
+                message: %FacebookMessenger.Response.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
                   seq: 216, text: "hello"},
-                 recipient: %FacebookMessenger.User{id: "PAGE_ID"},
-                 sender: %FacebookMessenger.User{id: "USER_ID"},
+                 recipient: %FacebookMessenger.Response.User{id: "PAGE_ID"},
+                 sender: %FacebookMessenger.Response.User{id: "USER_ID"},
                  timestamp: 1460245672080}], time: 1460245674269}],
              object: "page"}}
   end
@@ -46,12 +46,12 @@ defmodule FacebookMessenger.Controller.Test do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
 
     assert FacebookMessenger.parse_message(file) == {:ok,
-            %FacebookMessenger.Response{entry: [%FacebookMessenger.Entry{id: "PAGE_ID",
-               messaging: [%FacebookMessenger.Messaging{type: "message",
-                  message: %FacebookMessenger.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
+            %FacebookMessenger.Response{entry: [%FacebookMessenger.Response.Entry{id: "PAGE_ID",
+               messaging: [%FacebookMessenger.Response.Messaging{type: "message",
+                  message: %FacebookMessenger.Response.Message{mid: "mid.1460245671959:dad2ec9421b03d6f78",
                   seq: 216, text: "hello"},
-                 recipient: %FacebookMessenger.User{id: "PAGE_ID"},
-                 sender: %FacebookMessenger.User{id: "USER_ID"},
+                 recipient: %FacebookMessenger.Response.User{id: "PAGE_ID"},
+                 sender: %FacebookMessenger.Response.User{id: "USER_ID"},
                  timestamp: 1460245672080}], time: 1460245674269}],
              object: "page"}}
   end

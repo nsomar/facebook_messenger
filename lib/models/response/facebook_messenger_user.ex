@@ -1,4 +1,4 @@
-defmodule FacebookMessenger.User do
+defmodule FacebookMessenger.Response.User do
   @moduledoc """
   Facebook user structure
   """
@@ -6,7 +6,7 @@ defmodule FacebookMessenger.User do
   @derive [Poison.Encoder]
   defstruct [:id]
 
-  @type t :: %FacebookMessenger.User{
+  @type t :: %FacebookMessenger.Response.User{
     id: String.t
   }
 end

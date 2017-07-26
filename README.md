@@ -90,5 +90,5 @@ If you use phoenix framework in your project, then you need the phoenix version 
 ## Future Improvements
 
 - [ ] Handle other types of facebook messages
-- [ ] Support sending facebook structure messages
+- [x] Support sending facebook structure messages
 - [x] Handle facebook postback messages

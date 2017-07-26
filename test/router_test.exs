@@ -12,13 +12,13 @@ defmodule MockRouter do
 
   match _, do: conn
 
-  def success, do: send(self, 1)
-  def failure, do: send(self, 2)
+  def success, do: send(self(), 1)
+  def failure, do: send(self(), 2)
   def message(msg) do
     text = FacebookMessenger.Response.message_texts(msg) |> hd
     sender = FacebookMessenger.Response.message_senders(msg) |> hd
     FacebookMessenger.Sender.send(sender, text)
-    send(self, 3)
+    send(self(), 3)
   end
 
 end
@@ -30,12 +30,12 @@ defmodule FacebookMessenger.Router.Test do
   test "challange: returns 500 for wrong paths" do
     conn = conn(:get, "/wrong")
     router = FacebookMessenger.Router.init([])
-    {status, _, body} = FacebookMessenger.Router.call(conn, router) |> sent_resp
+    {status, _, _} = FacebookMessenger.Router.call(conn, router) |> sent_resp
     assert status == 500
 
     conn = conn(:get, "/messenger/webhook")
     router = FacebookMessenger.Router.init([])
-    {status, _, body} = FacebookMessenger.Router.call(conn, router) |> sent_resp
+    {status, _, _} = FacebookMessenger.Router.call(conn, router) |> sent_resp
     assert status == 500
   end
 
@@ -92,8 +92,7 @@ defmodule FacebookMessenger.Router.Test do
     conn = conn(:post, "/messenger/webhook", file)
 
     router = MockRouter.init([])
-    {status, _, body} = MockRouter.call(conn, router) |> sent_resp
-
+    MockRouter.call(conn, router)
     assert_received %{body: "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":{\"text\":\"hello\"}}", url: "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_TOKEN"}
   end
 
@@ -117,7 +116,7 @@ defmodule FacebookMessenger.Router.Test do
     conn = conn(:post, "/messenger/webhook", file)
 
     router = MockRouter.init([])
-    {status, _, body} = MockRouter.call(conn, router) |> sent_resp
+    MockRouter.call(conn, router)
     assert_received 3
   end
 end

@@ -1,4 +1,4 @@
-defmodule FacebookMessenger.Referral do
+defmodule FacebookMessenger.Response.Referral do
   @moduledoc """
     Facebook referral structure
   """
@@ -6,7 +6,7 @@ defmodule FacebookMessenger.Referral do
   @derive [Poison.Encoder]
   defstruct [:ref, :source, :type]
 
-  @type t :: %FacebookMessenger.Referral{
+  @type t :: %FacebookMessenger.Response.Referral{
     ref: String.t,
     source: String.t,
     type: String.t

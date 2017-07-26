@@ -21,6 +21,23 @@ defmodule FacebookMessenger.Sender do
   end
 
   @doc """
+  sends a message to the the recepient
+
+    * :recepient - the recepient to send the message to
+    * :message - the message to send
+    * :buttons - postback buttons
+  """
+  @spec send(String.t, String.t, [FacebookMessenger.Request.Button.t]) :: HTTPotion.Response.t
+  def send(recepient, message, buttons) do
+    res = manager.post(
+      url: url,
+      body: text_payload(recepient, message, buttons) |> to_json,
+    )
+    Logger.info("response from FB #{inspect(res)}")
+    res
+  end
+
+  @doc """
   sends an image message to the recipient
 
   * :recepient - the recepient to send the message to
@@ -32,7 +49,7 @@ defmodule FacebookMessenger.Sender do
       url: url,
       body: image_payload(recepient, image_url) |> to_json
     )
-    Logger.info("response fro FB #{inspect(res)}")
+    Logger.info("response from FB #{inspect(res)}")
     res
   end
 
@@ -46,6 +63,29 @@ defmodule FacebookMessenger.Sender do
     %{
       recipient: %{id: recepient},
       message: %{text: message}
+    }
+  end
+
+  @doc """
+  creates a payload to send to facebook
+
+    * :recepient - the recepient to send the message to
+    * :message - the message to send
+    * :postback - postback buttons
+  """
+  def text_payload(recepient, message, postback) do
+    %{
+      recipient: %{id: recepient},
+      message: %{
+        attachment: %{
+          type: "template",
+          payload: %{
+            template_type: "button",
+            text: message,
+            buttons: postback
+          }
+        }
+      },
     }
   end
 

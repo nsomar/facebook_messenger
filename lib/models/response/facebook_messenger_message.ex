@@ -1,4 +1,4 @@
-defmodule FacebookMessenger.Message do
+defmodule FacebookMessenger.Response.Message do
   @moduledoc """
   Facebook message structure
   """
@@ -6,7 +6,7 @@ defmodule FacebookMessenger.Message do
   @derive [Poison.Encoder]
   defstruct [:mid, :seq, :text]
 
-  @type t :: %FacebookMessenger.Message{
+  @type t :: %FacebookMessenger.Response.Message{
     mid: String.t,
     seq: integer,
     text: String.t

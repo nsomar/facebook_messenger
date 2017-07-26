@@ -10,7 +10,7 @@ end
 
 defmodule FacebookMessenger.RequestManager.Mock do
   @moduledoc """
-  moc respinsible to post a request to facebook
+  mock respinsible to post a request to facebook
   """
 
   def post(url: url, body: body) do

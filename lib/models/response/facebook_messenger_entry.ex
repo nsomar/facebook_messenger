@@ -1,13 +1,13 @@
-defmodule FacebookMessenger.Entry do
+defmodule FacebookMessenger.Response.Entry do
   @moduledoc """
   Facebook entry structure
   """
   @derive [Poison.Encoder]
   defstruct [:id, :time, :messaging]
 
-  @type t :: %FacebookMessenger.Entry{
+  @type t :: %FacebookMessenger.Response.Entry{
     id: String.t,
-    messaging: FacebookMessenger.Messaging.t,
+    messaging: FacebookMessenger.Response.Messaging.t,
     time: integer
   }
 end

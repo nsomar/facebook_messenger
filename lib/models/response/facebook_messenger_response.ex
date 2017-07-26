@@ -7,11 +7,15 @@ defmodule FacebookMessenger.Response do
   @postback_regex ~r/postback/
   defstruct [:object, :entry]
 
+   @type t :: %FacebookMessenger.Response{
+    object: String.t,
+    entry: FacebookMessenger.Response.Entry.t
+  }
+
   @doc """
   Decode a map into a `FacebookMessenger.Response`
   """
   @spec parse(map) :: FacebookMessenger.Response.t
-
   def parse(param) when is_map(param) do
     decoder = param |> get_parser |> decoding_map
     Poison.Decode.decode(param, as: decoder)
@@ -29,7 +33,7 @@ defmodule FacebookMessenger.Response do
   @doc """
   Get shorter representation of message data
   """
-  @spec get_messaging(FacebookMessenger.Response.t) :: FacebookMessenger.Messaging.t
+  @spec get_messaging(FacebookMessenger.Response.t) :: FacebookMessenger.Response.Messaging.t
   def get_messaging(%{entry: entries}) do
     entries |> hd |> Map.get(:messaging) |> hd
   end
@@ -59,7 +63,7 @@ defmodule FacebookMessenger.Response do
   @doc """
   Return user defined postback payload from a `FacebookMessenger.Response`
   """
-  @spec get_postback(FacebookMessenger.Response) :: FacebookMessenger.Postback.t
+  @spec get_postback(FacebookMessenger.Response) :: FacebookMessenger.Response.Postback.t
   def get_postback(%{entry: entries}) do
     entries
     |> get_messaging_struct
@@ -88,32 +92,28 @@ defmodule FacebookMessenger.Response do
   end
 
   defp postback_parser do
-    %FacebookMessenger.Messaging{
+    %FacebookMessenger.Response.Messaging{
       "type": "postback",
-      "sender": %FacebookMessenger.User{},
-      "recipient": %FacebookMessenger.User{},
-      "postback": %FacebookMessenger.Postback{}
+      "sender": %FacebookMessenger.Response.User{},
+      "recipient": %FacebookMessenger.Response.User{},
+      "postback": %FacebookMessenger.Response.Postback{}
     }
   end
 
   defp text_message_parser do
-    %FacebookMessenger.Messaging{
+    %FacebookMessenger.Response.Messaging{
       "type": "message",
-      "sender": %FacebookMessenger.User{},
-      "recipient": %FacebookMessenger.User{},
-      "message": %FacebookMessenger.Message{}
+      "sender": %FacebookMessenger.Response.User{},
+      "recipient": %FacebookMessenger.Response.User{},
+      "message": %FacebookMessenger.Response.Message{}
     }
   end
 
   defp decoding_map(messaging_parser) do
     %FacebookMessenger.Response{
-      "entry": [%FacebookMessenger.Entry{
+      "entry": [%FacebookMessenger.Response.Entry{
         "messaging": [messaging_parser]
       }]}
   end
 
-   @type t :: %FacebookMessenger.Response{
-    object: String.t,
-    entry: FacebookMessenger.Entry.t
-  }
 end

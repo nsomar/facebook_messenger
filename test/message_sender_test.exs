@@ -35,4 +35,14 @@ defmodule TestBotOne.MessageSenderTest do
     FacebookMessenger.Sender.send_image(1055439761215256, "sample.com/some_image.png")
     assert_received %{body: "{\"recipient\":{\"id\":1055439761215256},\"message\":{\"attachment\":{\"type\":\"image\",\"payload\":{\"url\":\"sample.com/some_image.png\"}}}}", url: "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_TOKEN"}
   end
+
+  test "sends correct text message with buttons" do
+    buttons = [
+      %FacebookMessenger.Request.Button{title: "t1", payload: "p1"},
+      %FacebookMessenger.Request.Button{title: "t2", payload: "p2"}
+    ]
+    
+    FacebookMessenger.Sender.send(1055439761215256, "Hello", buttons)
+    assert_received  %{body: "{\"recipient\":{\"id\":1055439761215256},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"text\":\"Hello\",\"template_type\":\"button\",\"buttons\":[{\"type\":\"postback\",\"title\":\"t1\",\"payload\":\"p1\"},{\"type\":\"postback\",\"title\":\"t2\",\"payload\":\"p2\"}]}}}}", url: "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_TOKEN"}
+  end
 end
