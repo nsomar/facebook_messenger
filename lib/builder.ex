@@ -1,6 +1,8 @@
 defmodule FacebookMessenger.Builder do
   @moduledoc false
 
+  alias FacebookMessenger.Sender
+
   # Goal: Make a macro that accepts a body and print
   # more maps based on the info given
   def start_link do
@@ -16,7 +18,7 @@ defmodule FacebookMessenger.Builder do
       # Changes payload body basedon the msg_type
       payload_body = %{
         recipient: %{id: unquote(id)},
-        message: build_payload(unquote(msg_type), unquote(text))
+        message: build_and_send(unquote(msg_type), unquote(text))
       }
 
       # Cleans state for each operation
@@ -36,19 +38,9 @@ defmodule FacebookMessenger.Builder do
   defp update_agent_list(agent, body),
     do: Agent.update(agent, fn state -> List.insert_at(state, -1, body) end)
 
-  # builds list for "elements" key on payload
-  def elements_key_payload do
-    elements = Agent.get(:elements, &(&1))
-    buttons = Agent.get(:buttons, &(&1))
-
-    buttons_map = %{buttons: buttons}
-
-    Enum.map(elements, &Map.merge(&1, buttons_map))
-  end
-
   # Builds the payload based on arg
-  def build_payload(:button_template, text) do
-    %{
+  def build_and_send(:button_template, text) do
+    payload = %{
       attachment: %{
         type: "template",
         payload: %{
@@ -58,9 +50,14 @@ defmodule FacebookMessenger.Builder do
         }
       }
     }
+
+    Sender.manager.post(
+      url: Sender.url(),
+      body: payload
+    )
   end
 
-  def build_payload(:generic_template, text) do
+  def build_and_send(:generic_template, text) do
     %{
       attachment: %{
         type: "template",
@@ -70,5 +67,15 @@ defmodule FacebookMessenger.Builder do
         }
       }
     }
+  end
+
+  # builds list for "elements" key on payload
+  def elements_key_payload do
+    elements = Agent.get(:elements, &(&1))
+    buttons = Agent.get(:buttons, &(&1))
+
+    buttons_map = %{buttons: buttons}
+
+    Enum.map(elements, &Map.merge(&1, buttons_map))
   end
 end
