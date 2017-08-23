@@ -51,10 +51,8 @@ defmodule FacebookMessenger.Builder do
       }
     }
 
-    Sender.manager.post(
-      url: Sender.url(),
-      body: payload
-    )
+    Sender.manager.post(url: Sender.url(), body: payload)
+    |> Sender.to_json()
   end
 
   def build_and_send(:generic_template, text) do
