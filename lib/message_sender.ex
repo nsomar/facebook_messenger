@@ -13,7 +13,7 @@ defmodule FacebookMessenger.Sender do
   @spec send(String.t, String.t) :: HTTPotion.Response.t
   def send(recepient, message) do
     res = manager.post(
-      url: url,
+      url: url(),
       body: text_payload(recepient, message) |> to_json
     )
     Logger.info("response from FB #{inspect(res)}")
@@ -29,7 +29,7 @@ defmodule FacebookMessenger.Sender do
   @spec send_image(String.t, String.t) :: HTTPotion.Response.t
   def send_image(recepient, image_url) do
     res = manager.post(
-      url: url,
+      url: url(),
       body: image_payload(recepient, image_url) |> to_json
     )
     Logger.info("response fro FB #{inspect(res)}")
