@@ -13,7 +13,11 @@ defmodule FacebookMessenger.Response do
   @spec parse(map) :: FacebookMessenger.Response.t
 
   def parse(param) when is_map(param) do
-    decoder = param |> get_parser |> decoding_map
+    decoder =
+      param
+      |> get_parser
+      |> decoding_map
+
     Poison.Decode.decode(param, as: decoder)
   end
 
@@ -22,8 +26,12 @@ defmodule FacebookMessenger.Response do
   """
   @spec parse(String.t) :: FacebookMessenger.Response.t
   def parse(param) when is_binary(param) do
-    decoder = param |> get_parser |> decoding_map
-    Poison.decode!(param, as: decoder)
+    decoder =
+      param
+      |> get_parser
+      |> decoding_map
+
+    Poison.decode(param, as: decoder)
   end
 
   @doc """
@@ -31,7 +39,10 @@ defmodule FacebookMessenger.Response do
   """
   @spec get_messaging(FacebookMessenger.Response.t) :: FacebookMessenger.Messaging.t
   def get_messaging(%{entry: entries}) do
-    entries |> hd |> Map.get(:messaging) |> hd
+    entries
+    |> hd
+    |> Map.get(:messaging)
+    |> hd
   end
 
   @doc """
@@ -39,11 +50,15 @@ defmodule FacebookMessenger.Response do
   """
   @spec message_texts(FacebookMessenger.Response) :: [String.t]
   def message_texts(%{entry: entries}) do
-    messaging =
+    entry_map =
       entries
       |> get_messaging_struct
-      |> Enum.map(&( &1 |> Map.get(:message)
-      |> Map.get(:text)))
+      |> Enum.find_value(&(&1.message))
+
+    case entry_map do
+      nil -> nil
+      _ -> entry_map.text
+    end
   end
 
   @doc """
@@ -51,9 +66,15 @@ defmodule FacebookMessenger.Response do
   """
   @spec message_senders(FacebookMessenger.Response) :: [String.t]
   def message_senders(%{entry: entries}) do
-    entries
-    |> get_messaging_struct
-    |> Enum.map(&( &1 |> Map.get(:sender) |> Map.get(:id)))
+    entry_map =
+      entries
+      |> get_messaging_struct
+      |> Enum.find_value(&(&1.sender))
+
+    case entry_map do
+      nil -> nil
+      _ -> entry_map.id
+    end
   end
 
   @doc """
@@ -69,22 +90,30 @@ defmodule FacebookMessenger.Response do
 
   defp get_parser(param) when is_binary(param) do
     cond do
-      String.match?(param, @postback_regex) -> postback_parser
-      true -> text_message_parser
+      String.match?(param, @postback_regex) -> postback_parser()
+      true -> text_message_parser()
     end
   end
 
   defp get_parser(%{"entry" => entries} = param) when is_map(param) do
-    messaging = entries |> get_messaging_struct("messaging") |> hd
+    messaging =
+      entries
+      |> get_messaging_struct("messaging")
+      |> List.first
 
     cond do
-      Map.has_key?(messaging, "postback") -> postback_parser
-      Map.has_key?(messaging, "message") -> text_message_parser
+      Map.has_key?(messaging, "postback") -> postback_parser()
+      true -> text_message_parser()
     end
   end
 
   defp get_messaging_struct(entries, messaging_key \\ :messaging) do
-    Enum.flat_map(entries, &Map.get(&1, messaging_key))
+    result = Enum.flat_map(entries, &Map.get(&1, messaging_key))
+
+    case result do
+      nil -> :ok
+      result -> result
+    end
   end
 
   defp postback_parser do
@@ -105,12 +134,13 @@ defmodule FacebookMessenger.Response do
     }
   end
 
-  defp decoding_map(messaging_parser) do
+  defp decoding_map(messaging_parser) when is_map(messaging_parser) do
     %FacebookMessenger.Response{
       "entry": [%FacebookMessenger.Entry{
         "messaging": [messaging_parser]
       }]}
   end
+  defp decoding_map(_), do: :ok
 
    @type t :: %FacebookMessenger.Response{
     object: String.t,
