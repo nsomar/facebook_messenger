@@ -16,7 +16,7 @@ defmodule FacebookMessenger.Sender do
       url: url(),
       body: text_payload(recepient, message) |> to_json
     )
-    Logger.info("response from FB #{inspect(res)}")
+    Logger.info("Response from Facebook: #{inspect(res)}")
     res
   end
 
@@ -32,7 +32,7 @@ defmodule FacebookMessenger.Sender do
       url: url(),
       body: image_payload(recepient, image_url) |> to_json
     )
-    Logger.info("response fro FB #{inspect(res)}")
+    Logger.info("Response from Facebook: #{inspect(res)}")
     res
   end
 
