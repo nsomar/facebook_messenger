@@ -11,7 +11,6 @@ defmodule FacebookMessenger.Response do
   Decode a map into a `FacebookMessenger.Response`
   """
   @spec parse(map) :: FacebookMessenger.Response.t
-
   def parse(param) when is_map(param) do
     decoder =
       param
@@ -31,8 +30,11 @@ defmodule FacebookMessenger.Response do
       |> get_parser
       |> decoding_map
 
-    Poison.decode(param, as: decoder)
+    {:ok, result} = Poison.decode(param, as: decoder)
+    result
   end
+
+  def parse(_), do: :error
 
   @doc """
   Get shorter representation of message data
@@ -56,7 +58,7 @@ defmodule FacebookMessenger.Response do
       |> Enum.find_value(&(&1.message))
 
     case entry_map do
-      nil -> nil
+      nil -> :error
       _ -> entry_map.text
     end
   end
@@ -84,8 +86,7 @@ defmodule FacebookMessenger.Response do
   def get_postback(%{entry: entries}) do
     entries
     |> get_messaging_struct
-    |> Enum.map(&Map.get(&1, :postback))
-    |> hd
+    |> Enum.find_value(&(&1.postback))
   end
 
   defp get_parser(param) when is_binary(param) do
@@ -101,17 +102,22 @@ defmodule FacebookMessenger.Response do
       |> get_messaging_struct("messaging")
       |> List.first
 
+    # One condition needs to always match, the previous version
+    # of below get_messaging_struct/2 function sometimes raised
+    # exceptions on this conditional because none matched.
     cond do
       Map.has_key?(messaging, "postback") -> postback_parser()
       true -> text_message_parser()
     end
   end
 
+  # Depending on the type of subscriptions you have on your page
+  # the messages can be nil or not.
   defp get_messaging_struct(entries, messaging_key \\ :messaging) do
     result = Enum.flat_map(entries, &Map.get(&1, messaging_key))
 
     case result do
-      nil -> :ok
+      nil -> :error
       result -> result
     end
   end
@@ -134,13 +140,15 @@ defmodule FacebookMessenger.Response do
     }
   end
 
+  # Better to do nothing instead of raising exceptions.
   defp decoding_map(messaging_parser) when is_map(messaging_parser) do
     %FacebookMessenger.Response{
       "entry": [%FacebookMessenger.Entry{
         "messaging": [messaging_parser]
       }]}
   end
-  defp decoding_map(_), do: :ok
+
+  defp decoding_map(_), do: :error
 
    @type t :: %FacebookMessenger.Response{
     object: String.t,
