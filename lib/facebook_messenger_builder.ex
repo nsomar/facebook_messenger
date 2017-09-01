@@ -17,10 +17,10 @@ defmodule FacebookMessenger.Builder do
   templates, buttons and quick-replies.
   """
   @spec body(integer, atom, String.t) :: HTTPotion.Response.t
-  defmacro body(id, msg_type \\ :button_template, text \\ nil, [do: body]) do
+  defmacro body(id, msg_type \\ :button_template, text \\ nil, [do: group_body]) do
     quote do
       # Do all operations so the state is saved already on the Agent
-      unquote(body)
+      unquote(group_body)
 
       # Changes payload body based on the msg_type
       build_and_send(unquote(id), unquote(msg_type), unquote(text))
@@ -66,6 +66,11 @@ defmodule FacebookMessenger.Builder do
   end
 
   def build_and_send(id, :generic_template, _text) do
+    generic_list =
+      :options
+      |> Agent.get(&(&1))
+      |> Enum.at(0)
+
     payload = %{
       recipient: %{id: id},
       message: %{
@@ -73,7 +78,7 @@ defmodule FacebookMessenger.Builder do
           type: "template",
           payload: %{
             template_type: "generic",
-            elements: Agent.get(:options, &(&1))
+            elements: Map.get(generic_list, :elements)
           }
         }
       }
