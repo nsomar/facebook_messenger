@@ -99,7 +99,7 @@ defmodule FacebookMessenger.Builder do
       message: %{
         attachment: %{
           type: "template",
-          payload: Map.get(opt_map, :payload)
+          payload: opt_map
         }
       }
     }
@@ -125,5 +125,24 @@ defmodule FacebookMessenger.Builder do
       |> Sender.to_json
 
     Sender.manager.post(url: Sender.url(), body: payload)
+  end
+
+  def testing do
+    body 123, :list_template do
+      fields %{
+        template_type: "list",
+        top_element_style: "compact",
+        elements: [
+          %{
+            title: "Classic shirt",
+            subtitle: "First subtitle"
+          },
+          %{
+            title: "Classic shirt 2",
+            subtitle: "Second subtitle"
+          }
+          ]
+        }
+      end
   end
 end

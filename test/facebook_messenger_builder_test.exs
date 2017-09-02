@@ -65,7 +65,7 @@ defmodule FacebookMessenger.BuilderTest do
     end
 
     assert_received %{
-      body: "{\"recipient\":{\"id\":1041671182605902},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":null}}}", url: "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_TOKEN"
+      body: "{\"recipient\":{\"id\":1041671182605902},\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"top_element_style\":\"compact\",\"elements\":[{\"title\":\"Classic shirt\",\"subtitle\":\"First subtitle\"},{\"title\":\"Classic shirt 2\",\"subtitle\":\"Second subtitle\"}]}}}}", url: "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_TOKEN"
     }
   end
 
