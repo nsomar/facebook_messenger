@@ -65,7 +65,6 @@ defmodule FacebookMessenger.Sender do
         false ->
           payload
       end
-    IO.inspect payload, label: "payload"
     post_to_recipient(recipient, payload)
   end
 
