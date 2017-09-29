@@ -1,19 +1,24 @@
 defmodule FacebookMessenger.RequestManager do
+
+  @timeout 30000
   @moduledoc """
   module respinsible to post a request to facebook
   """
   def post(url: url, body: body) do
     HTTPotion.post url,
-      body: body, headers: ["Content-Type": "application/json"]
+      body: body, headers: ["Content-Type": "application/json"],
+      timeout: @timeout
   end
 
   def get(url: url) do
-    HTTPotion.get url
+    HTTPotion.get url,
+      timeout: @timeout
   end
 
   def delete(url: url, body: body) do
     HTTPotion.delete url,
-      body: body, headers: ["Content-Type": "application/json"]
+      body: body, headers: ["Content-Type": "application/json"],
+      timeout: @timeout
   end
 
   def page_token() do
