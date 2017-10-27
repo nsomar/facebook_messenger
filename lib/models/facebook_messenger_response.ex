@@ -79,6 +79,7 @@ defmodule FacebookMessenger.Response do
 
     cond do
       Map.has_key?(messaging, "postback") -> postback_parser
+      Map.has_key?(messaging, "referral") -> referral_parser
       Map.has_key?(messaging, "message") -> text_message_parser
     end
   end
@@ -93,6 +94,15 @@ defmodule FacebookMessenger.Response do
       "sender": %FacebookMessenger.User{},
       "recipient": %FacebookMessenger.User{},
       "postback": %FacebookMessenger.Postback{}
+    }
+  end
+
+  defp referral_parser do
+    %FacebookMessenger.Messaging{
+      "type": "referral",
+      "sender": %FacebookMessenger.User{},
+      "recipient": %FacebookMessenger.User{},
+      "referral": %FacebookMessenger.Referral{}
     }
   end
 

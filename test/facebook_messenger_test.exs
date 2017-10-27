@@ -34,16 +34,29 @@ defmodule FacebookMessenger.Message.Test do
     assert message.text == "hello"
   end
 
-    test "postback gets initialized from a json" do
-      {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_postback.json")
-      {:ok, json} = file |> Poison.decode
+  test "postback gets initialized from a json" do
+    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_postback.json")
+    {:ok, json} = file |> Poison.decode
 
-      res = FacebookMessenger.Response.parse(json)
-      messaging = res |> FacebookMessenger.Response.get_messaging
+    res = FacebookMessenger.Response.parse(json)
+    messaging = res |> FacebookMessenger.Response.get_messaging
 
-      assert messaging.type == "postback"
-      assert messaging.postback.payload == "USER_DEFINED_PAYLOAD"
-    end
+    assert messaging.type == "postback"
+    assert messaging.postback.payload == "USER_DEFINED_PAYLOAD"
+  end
+
+  test "referral gets initialized from a json" do
+    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_referral.json")
+    {:ok, json} = file |> Poison.decode
+
+    res = FacebookMessenger.Response.parse(json)
+    messaging = res |> FacebookMessenger.Response.get_messaging
+
+    assert messaging.type == "referral"
+    assert messaging.referral.ref == "hello123"
+    assert messaging.referral.source == "SHORTLINK"
+    assert messaging.referral.type == "OPEN_THREAD"
+  end
 
   test "text message gets the message text from the response" do
     {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
