@@ -20,7 +20,7 @@ defmodule FacebookMessenger.Profile do
   """
   def url do
     query = "access_token=#{page_token}"
-    "https://graph.facebook.com/v2.6/me/messenger_profile?#{query}"
+    "https://graph.facebook.com/v2.10/me/messenger_profile?#{query}"
   end
 
   defp page_token do
