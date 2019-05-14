@@ -6,7 +6,7 @@ defmodule FacebookMessenger.Mixfile do
       app: :facebook_messenger,
       name: "ExFacebookMessenger",
       source_url: "https://github.com/oarrabi/facebook_messenger",
-      version: "0.3.0",
+      version: "0.4.0",
       docs: [extras: ["README.md"]],
       elixir: "~> 1.6",
       build_embedded: Mix.env() == :prod,
@@ -14,6 +14,7 @@ defmodule FacebookMessenger.Mixfile do
       test_coverage: [tool: Coverex.Task, coveralls: true],
       deps: deps(),
       package: package(),
+      licenses: ["MIT"],
       description: description()
     ]
   end
