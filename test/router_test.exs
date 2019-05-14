@@ -1,26 +1,27 @@
 defmodule MockRouter do
   use Plug.Router
 
-  plug :match
-  plug :dispatch
+  plug(:match)
+  plug(:dispatch)
 
-  forward "/messenger/webhook",
+  forward("/messenger/webhook",
     to: FacebookMessenger.Router,
     challange_succeeded: &MockRouter.success/0,
     challange_failed: &MockRouter.failure/0,
     message_received: &MockRouter.message/1
+  )
 
-  match _, do: conn
+  match(_, do: conn)
 
-  def success, do: send(self, 1)
-  def failure, do: send(self, 2)
+  def success, do: send(self(), 1)
+  def failure, do: send(self(), 2)
+
   def message(msg) do
     text = FacebookMessenger.Response.message_texts(msg) |> hd
     sender = FacebookMessenger.Response.message_senders(msg) |> hd
     FacebookMessenger.Sender.send(sender, text)
-    send(self, 3)
+    send(self(), 3)
   end
-
 end
 
 defmodule FacebookMessenger.Router.Test do
@@ -30,17 +31,22 @@ defmodule FacebookMessenger.Router.Test do
   test "challange: returns 500 for wrong paths" do
     conn = conn(:get, "/wrong")
     router = FacebookMessenger.Router.init([])
-    {status, _, body} = FacebookMessenger.Router.call(conn, router) |> sent_resp
+    {status, _, _body} = FacebookMessenger.Router.call(conn, router) |> sent_resp
     assert status == 500
 
     conn = conn(:get, "/messenger/webhook")
     router = FacebookMessenger.Router.init([])
-    {status, _, body} = FacebookMessenger.Router.call(conn, router) |> sent_resp
+    {status, _, _body} = FacebookMessenger.Router.call(conn, router) |> sent_resp
     assert status == 500
   end
 
   test "challange: returns 200 for correct paths" do
-    conn = conn(:get, "/messenger/webhook?hub.mode=subscribe&hub.challenge=914942744&hub.verify_token=VERIFY_TOKEN")
+    conn =
+      conn(
+        :get,
+        "/messenger/webhook?hub.mode=subscribe&hub.challenge=914942744&hub.verify_token=VERIFY_TOKEN"
+      )
+
     router = FacebookMessenger.Router.init([])
     {status, _, body} = FacebookMessenger.Router.call(conn, router) |> sent_resp
     assert status == 200
@@ -48,7 +54,12 @@ defmodule FacebookMessenger.Router.Test do
   end
 
   test "challange: returns 500 if token is incorrect" do
-    conn = conn(:get, "/messenger/webhook?hub.mode=subscribe&hub.challenge=914942744&hub.verify_token=VERIFY_TOKEN2")
+    conn =
+      conn(
+        :get,
+        "/messenger/webhook?hub.mode=subscribe&hub.challenge=914942744&hub.verify_token=VERIFY_TOKEN2"
+      )
+
     router = FacebookMessenger.Router.init([])
     {status, _, body} = FacebookMessenger.Router.call(conn, router) |> sent_resp
     assert status == 500
@@ -56,7 +67,7 @@ defmodule FacebookMessenger.Router.Test do
   end
 
   test "message: returns 200 for correct message" do
-    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
+    {:ok, file} = File.read("#{__DIR__}/fixtures/messenger_response.json")
     conn = conn(:post, "/messenger/webhook", file)
 
     router = FacebookMessenger.Router.init([])
@@ -67,7 +78,7 @@ defmodule FacebookMessenger.Router.Test do
   end
 
   test "message: returns 500 for bad message" do
-    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
+    {:ok, file} = File.read("#{__DIR__}/fixtures/messenger_response.json")
     conn = conn(:post, "/messenger/webhook2", file)
 
     router = FacebookMessenger.Router.init([])
@@ -81,43 +92,52 @@ defmodule FacebookMessenger.Router.Test do
     conn = conn(:post, "/messenger/webhook2", "1")
 
     router = FacebookMessenger.Router.init([])
-    {status, _, body} = FacebookMessenger.Router.call(conn, router) |> sent_resp
-
-    assert status == 500
-    assert body == ""
+    assert {500, _, ""} = FacebookMessenger.Router.call(conn, router) |> sent_resp
   end
 
   test "message: it sends a message if correct" do
-    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
+    {:ok, file} = File.read("#{__DIR__}/fixtures/messenger_response.json")
     conn = conn(:post, "/messenger/webhook", file)
 
     router = MockRouter.init([])
-    {status, _, body} = MockRouter.call(conn, router) |> sent_resp
+    assert {200, _, _} = MockRouter.call(conn, router) |> sent_resp
 
-    assert_received %{body: "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":{\"text\":\"hello\"}}", url: "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_TOKEN"}
+    assert_received %{
+      body: "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":{\"text\":\"hello\"}}",
+      url: "https://graph.facebook.com/v2.6/me/messages?access_token=PAGE_TOKEN"
+    }
   end
 
   test "challange: 200 calls the success function" do
+    conn =
+      conn(
+        :get,
+        "/messenger/webhook?hub.mode=subscribe&hub.challenge=914942744&hub.verify_token=VERIFY_TOKEN"
+      )
 
-    conn = conn(:get, "/messenger/webhook?hub.mode=subscribe&hub.challenge=914942744&hub.verify_token=VERIFY_TOKEN")
     router = MockRouter.init([])
     MockRouter.call(conn, router)
     assert_received 1
   end
 
   test "challange: 500 calls the failure function" do
-    conn = conn(:get, "/messenger/webhook?hub.mode=subscribe&hub.challenge=914942744&hub.verify_token=VERIFY_TOKEN2")
+    conn =
+      conn(
+        :get,
+        "/messenger/webhook?hub.mode=subscribe&hub.challenge=914942744&hub.verify_token=VERIFY_TOKEN2"
+      )
+
     router = MockRouter.init([])
     MockRouter.call(conn, router)
     assert_received 2
   end
 
   test "message: 200 calls the message function" do
-    {:ok, file} = File.read("#{System.cwd}/test/fixtures/messenger_response.json")
+    {:ok, file} = File.read("#{__DIR__}/fixtures/messenger_response.json")
     conn = conn(:post, "/messenger/webhook", file)
 
     router = MockRouter.init([])
-    {status, _, body} = MockRouter.call(conn, router) |> sent_resp
+    {200, _, _body} = MockRouter.call(conn, router) |> sent_resp
     assert_received 3
   end
 end

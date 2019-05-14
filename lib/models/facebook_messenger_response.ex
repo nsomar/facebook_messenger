@@ -6,26 +6,20 @@ defmodule FacebookMessenger.Response do
   require Logger
 
   @derive [Poison.Encoder]
-  @postback_regex ~r/postback/
   defstruct [:object, :entry]
 
   @doc """
-  Decode a map into a `FacebookMessenger.Response`
+  Decode a or a string map into a `FacebookMessenger.Response`
   """
-  @spec parse(map) :: FacebookMessenger.Response.t()
+  @spec parse(Map.t() | String.t()) :: FacebookMessenger.Response.t()
 
   def parse(param) when is_map(param) do
     decoder = param |> get_parser |> decoding_map
     Poison.Decode.decode(param, as: decoder)
   end
 
-  @doc """
-  Decode a string into a `FacebookMessenger.Response`
-  """
-  @spec parse(String.t()) :: FacebookMessenger.Response.t()
   def parse(param) when is_binary(param) do
-    decoder = param |> get_parser |> decoding_map
-    Poison.decode!(param, as: decoder)
+    Poison.decode!(param) |> parse()
   end
 
   @doc """
@@ -69,13 +63,6 @@ defmodule FacebookMessenger.Response do
     |> get_messaging_struct
     |> Enum.map(&Map.get(&1, :postback))
     |> hd
-  end
-
-  defp get_parser(param) when is_binary(param) do
-    cond do
-      String.match?(param, @postback_regex) -> postback_parser()
-      true -> text_message_parser()
-    end
   end
 
   defp get_parser(%{"entry" => entries} = param) when is_map(param) do

@@ -7,7 +7,7 @@ defmodule FacebookMessenger.Postback do
   defstruct [:payload, :referral]
 
   @type t :: %FacebookMessenger.Postback{
-    payload: String.t,
-    referral: FacebookMessenger.Referral
-  }
+          payload: String.t(),
+          referral: FacebookMessenger.Referral
+        }
 end

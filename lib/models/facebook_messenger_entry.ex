@@ -6,8 +6,8 @@ defmodule FacebookMessenger.Entry do
   defstruct [:id, :time, :messaging]
 
   @type t :: %FacebookMessenger.Entry{
-    id: String.t,
-    messaging: FacebookMessenger.Messaging.t,
-    time: integer
-  }
+          id: String.t(),
+          messaging: FacebookMessenger.Messaging.t(),
+          time: integer
+        }
 end

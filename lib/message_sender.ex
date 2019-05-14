@@ -16,8 +16,9 @@ defmodule FacebookMessenger.Sender do
 
   defp post_to_recipient(recipient, payload) do
     body = Map.put(payload, :recipient, %{id: recipient})
-    manager.post(
-      url: url,
+
+    manager().post(
+      url: url(),
       body: Poison.encode!(body)
     )
   end
@@ -25,20 +26,18 @@ defmodule FacebookMessenger.Sender do
   ## messenger profile API
 
   def get_messenger_profile(fields) do
-    manager.get(
-      url: url("messenger_profile", fields: (Enum.join(fields, ",")))
-    )
+    manager().get(url: url("messenger_profile", fields: Enum.join(fields, ",")))
   end
 
   def remove_messenger_profile(fields) do
-    manager.delete(
+    manager().delete(
       url: url("messenger_profile"),
       body: Poison.encode!(%{fields: fields})
     )
   end
 
   def set_messenger_profile(payload) do
-    manager.post(
+    manager().post(
       url: url("messenger_profile"),
       body: Poison.encode!(payload)
     )
@@ -55,16 +54,19 @@ defmodule FacebookMessenger.Sender do
 
   https://developers.facebook.com/docs/messenger-platform/send-api-reference/quick-replies
   """
-  @spec send(String.t, String.t, [map()]) :: HTTPotion.Response.t
+  @spec send(String.t(), String.t(), [map()]) :: HTTPotion.Response.t()
   def send(recipient, message, quick_replies \\ nil) do
     payload = %{message: %{text: message}}
+
     payload =
       case is_list(quick_replies) do
         true ->
           put_in(payload, [:message, :quick_replies], quick_replies)
+
         false ->
           payload
       end
+
     post_to_recipient(recipient, payload)
   end
 
@@ -74,7 +76,7 @@ defmodule FacebookMessenger.Sender do
   * :recipient - the recipient to send the message to
   * :image_url - the url of the image to be sent
   """
-  @spec send_image(String.t, String.t) :: HTTPotion.Response.t
+  @spec send_image(String.t(), String.t()) :: HTTPotion.Response.t()
   def send_image(recipient, image_url) do
     send_content(recipient, "image", image_url)
   end
@@ -86,7 +88,7 @@ defmodule FacebookMessenger.Sender do
   * :content_type - audio | file | image | video
   * :content_url - the url of the content
   """
-  @spec send_content(String.t, String.t, String.t) :: HTTPotion.Response.t
+  @spec send_content(String.t(), String.t(), String.t()) :: HTTPotion.Response.t()
   def send_content(recipient, content_type, content_url) do
     payload = %{url: content_url}
     send_attachment(recipient, content_type, payload)
@@ -98,7 +100,7 @@ defmodule FacebookMessenger.Sender do
   * :recipient - the recipient to send the message to
   * :template - the template payload
   """
-  @spec send_image(String.t, Map.t) :: HTTPotion.Response.t
+  @spec send_image(String.t(), Map.t()) :: HTTPotion.Response.t()
   def send_template(recipient, template) do
     send_attachment(recipient, "template", template)
   end
@@ -110,7 +112,7 @@ defmodule FacebookMessenger.Sender do
   * :attachment - map with attachment information
 
   """
-  @spec send_attachment(String.t, String.t, Map.t) :: HTTPotion.Response.t
+  @spec send_attachment(String.t(), String.t(), Map.t()) :: HTTPotion.Response.t()
   def send_attachment(recipient, type, payload) do
     attachment = %{type: type, payload: payload}
     payload = %{message: %{attachment: attachment}}
@@ -125,11 +127,11 @@ defmodule FacebookMessenger.Sender do
     "https://graph.facebook.com/v2.6/me/#{endpoint}?#{query}"
   end
 
-  defp page_token do
+  defp page_token() do
     manager().page_token()
   end
 
-  defp manager do
+  defp manager() do
     Application.get_env(:facebook_messenger, :request_manager) || FacebookMessenger.RequestManager
   end
 end

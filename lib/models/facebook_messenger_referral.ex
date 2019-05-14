@@ -7,8 +7,8 @@ defmodule FacebookMessenger.Referral do
   defstruct [:ref, :source, :type]
 
   @type t :: %FacebookMessenger.Referral{
-    ref: String.t,
-    source: String.t,
-    type: String.t
-  }
+          ref: String.t(),
+          source: String.t(),
+          type: String.t()
+        }
 end

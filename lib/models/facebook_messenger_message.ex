@@ -7,9 +7,9 @@ defmodule FacebookMessenger.Message do
   defstruct [:mid, :seq, :text, :attachments]
 
   @type t :: %FacebookMessenger.Message{
-    mid: String.t,
-    seq: integer,
-    text: String.t,
-    attachments: [Map.t]
-  }
+          mid: String.t(),
+          seq: integer,
+          text: String.t(),
+          attachments: [Map.t()]
+        }
 end
