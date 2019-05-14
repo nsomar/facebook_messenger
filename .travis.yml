@@ -8,6 +8,7 @@ otp_release:
   - 21.0
 install:
   - mix local.hex --force
+  - mix local.rebar --force
 script: "MIX_ENV=test mix do deps.get, deps.compile, test --cover"
 
 after_script:
