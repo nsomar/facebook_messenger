@@ -13,20 +13,21 @@ defmodule FacebookMessenger do
 
   - `params`: Parameters sent from facebook
   """
-  def check_challenge(%{"hub.mode" => "subscribe",
-                        "hub.verify_token" => token,
-                        "hub.challenge" => challenge} = params) do
+  def check_challenge(%{
+        "hub.mode" => "subscribe",
+        "hub.verify_token" => token,
+        "hub.challenge" => challenge
+      }) do
+    Logger.debug("token #{token}")
+    Logger.debug("verify_token #{verify_token()}")
 
-    Logger.info "token #{token}"
-    Logger.info "verify_token #{verify_token}"
-
-    case token == verify_token do
+    case token == verify_token() do
       true -> {:ok, challenge}
       _ -> :error
     end
   end
 
-  def check_challenge(params), do: :error
+  def check_challenge(_params), do: :error
 
   @doc """
   Parse the payload sent from facebook and converts them to `FacebookMessenger.Response` structure
@@ -37,20 +38,20 @@ defmodule FacebookMessenger do
   """
   def parse_message(params) when is_bitstring(params) do
     response = FacebookMessenger.Response.parse(params)
-    Logger.info("Recevied messsages #{inspect(response)}")
+    Logger.debug("Received messsages #{inspect(response)}")
 
     {:ok, response}
   end
 
   def parse_message(%{"object" => "page"} = params) do
     response = FacebookMessenger.Response.parse(params)
-    Logger.info("Recevied messsages #{inspect(response)}")
+    Logger.debug("Received messsages #{inspect(response)}")
 
     {:ok, response}
   end
 
   def parse_message(params) do
-    Logger.info("Webhook bad request with params #{inspect(params)}")
+    Logger.warn("Webhook bad request with params #{inspect(params)}")
     :error
   end
 

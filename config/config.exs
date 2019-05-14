@@ -5,7 +5,7 @@ use Mix.Config
 config :logger,
   level: :info
 
-case Mix.env do
+case Mix.env() do
   :test ->
     config :facebook_messenger,
       facebook_page_token: "PAGE_TOKEN",
@@ -22,5 +22,6 @@ case Mix.env do
       request_manager: FacebookMessenger.RequestManager,
       responder: FacebookMessenger.Responder
 
-  _ -> true
+  _ ->
+    true
 end

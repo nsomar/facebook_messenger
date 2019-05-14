@@ -7,6 +7,6 @@ defmodule FacebookMessenger.User do
   defstruct [:id]
 
   @type t :: %FacebookMessenger.User{
-    id: String.t
-  }
+          id: String.t()
+        }
 end
